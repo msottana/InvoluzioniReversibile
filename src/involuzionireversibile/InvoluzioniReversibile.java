@@ -133,7 +133,7 @@ public class InvoluzioniReversibile {
         while (!nodi.isEmpty()) {
             int nodo = nodi.remove((int) 0);
             if (ret.ro[nodo] != nodo) {
-                nodi.remove((Integer)ret.ro[nodo]);
+                nodi.remove((Integer) ret.ro[nodo]);
                 double somma_1 = trovaSommaUscenti(ret.chain, nodo);
                 double somma_2 = trovaSommaUscenti(ret.chain, ret.ro[nodo]);
                 int x = nodo;
@@ -142,7 +142,7 @@ public class InvoluzioniReversibile {
                 double valAggiunto = gen.nextDouble();
                 System.out.println("valore uscite di x: " + somma_1);
                 System.out.println("valore uscite di y: " + somma_2);
-                if (somma_1 > somma_2) {   
+                if (somma_1 > somma_2) {
                     System.out.println("x é il piú grande");
                     System.out.println("aggiungo il valore: " + valAggiunto);
                     valArco = somma_1 - somma_2 + valAggiunto;
@@ -152,8 +152,7 @@ public class InvoluzioniReversibile {
                     ret.chain[x][ret.chain.length - 1] = valAggiunto;
                     System.out.println("metto a partire da x solo" + valAggiunto);
                     ret.chain[ret.chain.length - 1][y] = ret.pi[x] * valAggiunto / ret.pi[ret.chain.length - 1];
-                    
-                    
+
                 } else {
                     System.out.println("y é il piú grande");
                     System.out.println("aggiungo il valore: " + valAggiunto);
@@ -167,17 +166,18 @@ public class InvoluzioniReversibile {
                 }
             }
         }
-        int flag=0;
-        for(int i = 0; (i<ret.chain.length && flag==0); i++){
-            if(ret.chain[ret.chain.length-1][i] != 0)
-                flag=1;
+        int flag = 0;
+        for (int i = 0; (i < ret.chain.length && flag == 0); i++) {
+            if (ret.chain[ret.chain.length - 1][i] != 0) {
+                flag = 1;
+            }
         }
-        if(flag==0){
-            int x = gen.nextInt(ret.chain.length -1);
-            double val = rinomine(ret.chain.length-1, x , ret.pi, ret.chain, ret.ro);
-            ret.chain[ret.chain.length-1][ret.ro[x]]=val;
-            ret.chain[ret.ro[x]][ret.chain.length-1]= ret.chain[x][ret.chain.length-1]; 
-            
+        if (flag == 0) {
+            int x = gen.nextInt(ret.chain.length - 1);
+            double val = rinomine(ret.chain.length - 1, x, ret.pi, ret.chain, ret.ro);
+            ret.chain[ret.chain.length - 1][ret.ro[x]] = val;
+            ret.chain[ret.ro[x]][ret.chain.length - 1] = ret.chain[x][ret.chain.length - 1];
+
         }
     }
 
