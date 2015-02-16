@@ -168,12 +168,12 @@ public class InvoluzioniReversibile {
             }
         }
         int flag=0;
-        for(int i = 0; (i<ret.chain.length && flag!=0); i++){
+        for(int i = 0; (i<ret.chain.length && flag==0); i++){
             if(ret.chain[ret.chain.length-1][i] != 0)
                 flag=1;
         }
         if(flag==0){
-            int x = gen.nextInt(ret.chain.length);
+            int x = gen.nextInt(ret.chain.length -1);
             double val = rinomine(ret.chain.length-1, x , ret.pi, ret.chain, ret.ro);
             ret.chain[ret.chain.length-1][ret.ro[x]]=val;
             ret.chain[ret.ro[x]][ret.chain.length-1]= ret.chain[x][ret.chain.length-1]; 
