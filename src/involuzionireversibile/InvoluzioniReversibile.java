@@ -111,7 +111,7 @@ public class InvoluzioniReversibile {
         System.out.println("Elapsed time: " + elapsedTime + "ms");
     }
 
-    private static void rinomine(int a, int b, double[] pi, double[][] chain, int[] ro) {
+    private static double rinomine(int a, int b, double[] pi, double[][] chain, int[] ro) {
         Random gen = new Random();
         int aR = ro[b];
         int bR = ro[a];
@@ -119,11 +119,13 @@ public class InvoluzioniReversibile {
         chain[a][b] = gen.nextDouble();
         //creo arco dalla rinomina di b alla rinomina di a tramite la formula
         chain[aR][bR] = pi[a] * chain[a][b] / pi[b];
+        return chain[a][b];
     }
 
     //per ogni nodo identifica il suo gruppo, il massimo di quel gruppo, e sistema la rate aggiungendo un arco verso il nodo
     //aggiuntivo e crendo poi l'arco in ingresso verso la rinomina (che é in ingresso quindi non va a modificare la rate)
     private static void sistemaRate(Tripla ret) {
+        Random gen = new Random();
         ArrayList<Integer> nodi = new ArrayList<>();
         for (int i = 0; i < ret.chain.length; i++) {
             nodi.add(i);
@@ -131,19 +133,51 @@ public class InvoluzioniReversibile {
         while (!nodi.isEmpty()) {
             int nodo = nodi.remove((int) 0);
             if (ret.ro[nodo] != nodo) {
+                nodi.remove((Integer)ret.ro[nodo]);
                 double somma_1 = trovaSommaUscenti(ret.chain, nodo);
                 double somma_2 = trovaSommaUscenti(ret.chain, ret.ro[nodo]);
+                int x = nodo;
+                int y = ret.ro[nodo];
                 double valArco;
-                if (somma_1 > somma_2) {
-                    valArco = somma_1 - somma_2;
-                    ret.chain[ret.ro[nodo]][ret.chain.length - 1] = valArco;
-                    ret.chain[ret.chain.length - 1][nodo] = ret.pi[nodo] * valArco / ret.pi[ret.chain.length - 1];
+                double valAggiunto = gen.nextDouble();
+                System.out.println("valore uscite di x: " + somma_1);
+                System.out.println("valore uscite di y: " + somma_2);
+                if (somma_1 > somma_2) {   
+                    System.out.println("x é il piú grande");
+                    System.out.println("aggiungo il valore: " + valAggiunto);
+                    valArco = somma_1 - somma_2 + valAggiunto;
+                    System.out.println("ottengo un valore" + valArco + "che faccio partire da y");
+                    ret.chain[y][ret.chain.length - 1] = valArco;
+                    ret.chain[ret.chain.length - 1][x] = ret.pi[y] * valArco / ret.pi[ret.chain.length - 1];
+                    ret.chain[x][ret.chain.length - 1] = valAggiunto;
+                    System.out.println("metto a partire da x solo" + valAggiunto);
+                    ret.chain[ret.chain.length - 1][y] = ret.pi[x] * valAggiunto / ret.pi[ret.chain.length - 1];
+                    
+                    
                 } else {
-                    valArco = somma_2 - somma_1;
-                    ret.chain[nodo][ret.chain.length - 1] = valArco;
-                    ret.chain[ret.chain.length - 1][ret.ro[nodo]] = ret.pi[ret.ro[nodo]] * valArco / ret.pi[ret.chain.length - 1];
+                    System.out.println("y é il piú grande");
+                    System.out.println("aggiungo il valore: " + valAggiunto);
+                    valArco = somma_2 - somma_1 + valAggiunto;
+                    System.out.println("ottengo un valore" + valArco + "che faccio partire da x");
+                    ret.chain[x][ret.chain.length - 1] = valArco;
+                    ret.chain[ret.chain.length - 1][y] = ret.pi[x] * valArco / ret.pi[ret.chain.length - 1];
+                    ret.chain[y][ret.chain.length - 1] = valAggiunto;
+                    System.out.println("metto a partire da y solo" + valAggiunto);
+                    ret.chain[ret.chain.length - 1][x] = ret.pi[y] * valAggiunto / ret.pi[ret.chain.length - 1];
                 }
             }
+        }
+        int flag=0;
+        for(int i = 0; (i<ret.chain.length && flag!=0); i++){
+            if(ret.chain[ret.chain.length-1][i] != 0)
+                flag=1;
+        }
+        if(flag==0){
+            int x = gen.nextInt(ret.chain.length);
+            double val = rinomine(ret.chain.length-1, x , ret.pi, ret.chain, ret.ro);
+            ret.chain[ret.chain.length-1][ret.ro[x]]=val;
+            ret.chain[ret.ro[x]][ret.chain.length-1]= ret.chain[x][ret.chain.length-1]; 
+            
         }
     }
 
