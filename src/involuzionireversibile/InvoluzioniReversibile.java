@@ -30,7 +30,7 @@ public class InvoluzioniReversibile {
         ArrayList<Integer> appoggio = new ArrayList();
         Random gen = new Random();
         int a, b;
-
+        double sommaPi = 0.0;
         for (int i = 0; i < n; i++) {
             appoggio.add(i);
         }
@@ -47,14 +47,27 @@ public class InvoluzioniReversibile {
         ret.ro[n] = n;
         //generazione pi greco per tutti i nodi e li inserisco in u (tranne n+1)
         for (int i = 0; i < n; i++) {
+            ret.ro[i] = i;//aggiunta per renderla reversibile
             if (ret.pi[i] == 0) {
                 ret.pi[i] = gen.nextDouble();
             }
             ret.pi[ret.ro[i]] = ret.pi[i];
             u.add(i);
+            sommaPi += ret.pi[i];
         }
         //genero anche la pi del nodo fittizio
         ret.pi[n] = gen.nextDouble();
+        sommaPi += ret.pi[n];
+        /*
+         * La somma dei pi deve essere uguale a uno
+         */
+        for(int i = 0; i < ret.pi.length; i++) {
+            ret.pi[i] /= sommaPi;
+        }
+        sommaPi = 0;
+        for(int i = 0; i < ret.pi.length; i++) {
+            sommaPi += ret.pi[i];
+        }
         //aggiungo un nodo all'insieme iniziale
         s.add(u.remove(gen.nextInt(u.size())));
         //generazione degli archi: finché ci sono nodi in u prendo un nodo da s, ne rimuovo uno da u e faccio i controlli per vedere se
@@ -82,7 +95,7 @@ public class InvoluzioniReversibile {
         long startTime = System.currentTimeMillis();
         long stopTime;
         long elapsedTime;
-        NumberFormat formatter = new DecimalFormat("#0.0000");
+        NumberFormat formatter = new DecimalFormat("#0.0000000000000000");
         Tripla tests[] = new Tripla[1];//serve per generare più catene, non viene utilizzato per adesso
         for (int k = 0; k < 1; k++) {
             Tripla chain = getChain(n);
