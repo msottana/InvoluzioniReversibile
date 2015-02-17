@@ -3,6 +3,8 @@
  */
 package involuzionireversibile;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -80,6 +82,7 @@ public class InvoluzioniReversibile {
         long startTime = System.currentTimeMillis();
         long stopTime;
         long elapsedTime;
+        NumberFormat formatter = new DecimalFormat("#0.0000");
         Tripla tests[] = new Tripla[1];//serve per generare più catene, non viene utilizzato per adesso
         for (int k = 0; k < 1; k++) {
             Tripla chain = getChain(n);
@@ -100,7 +103,7 @@ public class InvoluzioniReversibile {
             System.out.println("");
             for (int i = 0; i < n + 1; i++) {
                 for (int j = 0; j < n + 1; j++) {
-                    System.out.print(archi[i][j] + " | ");
+                    System.out.print(formatter.format(archi[i][j]) + " | ");
                 }
                 System.out.println("");
             }
@@ -140,28 +143,18 @@ public class InvoluzioniReversibile {
                 int y = ret.ro[nodo];
                 double valArco;
                 double valAggiunto = gen.nextDouble();
-                System.out.println("valore uscite di x: " + somma_1);
-                System.out.println("valore uscite di y: " + somma_2);
                 if (somma_1 > somma_2) {
-                    System.out.println("x é il piú grande");
-                    System.out.println("aggiungo il valore: " + valAggiunto);
                     valArco = somma_1 - somma_2 + valAggiunto;
-                    System.out.println("ottengo un valore" + valArco + "che faccio partire da y");
                     ret.chain[y][ret.chain.length - 1] = valArco;
                     ret.chain[ret.chain.length - 1][x] = ret.pi[y] * valArco / ret.pi[ret.chain.length - 1];
                     ret.chain[x][ret.chain.length - 1] = valAggiunto;
-                    System.out.println("metto a partire da x solo" + valAggiunto);
                     ret.chain[ret.chain.length - 1][y] = ret.pi[x] * valAggiunto / ret.pi[ret.chain.length - 1];
 
                 } else {
-                    System.out.println("y é il piú grande");
-                    System.out.println("aggiungo il valore: " + valAggiunto);
                     valArco = somma_2 - somma_1 + valAggiunto;
-                    System.out.println("ottengo un valore" + valArco + "che faccio partire da x");
                     ret.chain[x][ret.chain.length - 1] = valArco;
                     ret.chain[ret.chain.length - 1][y] = ret.pi[x] * valArco / ret.pi[ret.chain.length - 1];
                     ret.chain[y][ret.chain.length - 1] = valAggiunto;
-                    System.out.println("metto a partire da y solo" + valAggiunto);
                     ret.chain[ret.chain.length - 1][x] = ret.pi[y] * valAggiunto / ret.pi[ret.chain.length - 1];
                 }
             }
@@ -189,11 +182,4 @@ public class InvoluzioniReversibile {
         }
         return ret;
     }
-}
-
-class Tripla {
-
-    double pi[];
-    double chain[][];
-    int ro[];
 }
