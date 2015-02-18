@@ -3,6 +3,9 @@
  */
 package involuzionireversibile;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -20,31 +23,19 @@ public class InvoluzioniReversibile {
     public static Tripla getChain(int n) {
         Tripla ret = new Tripla();
         //generiamo n nodi, e poi 1 in piú per sistemare le rate uscenti
-        ret.chain = new double[n + 1][n + 1];
-        ret.pi = new double[n + 1];
-        ret.ro = new int[n + 1];
+        ret.chain = new double[n][n];
+        ret.pi = new double[n];
+        ret.ro = new int[n];
         // s é l'insieme che contiene tutti i nodi che formano tra loro una componente connessa
         ArrayList<Integer> s = new ArrayList();
         //u é l'insieme dei nodi che non si trovano nella componenete connessa
         ArrayList<Integer> u = new ArrayList();
-        ArrayList<Integer> appoggio = new ArrayList();
+        //ArrayList<Integer> appoggio = new ArrayList();
         Random gen = new Random();
         int a, b;
         double sommaPi = 0.0;
-        for (int i = 0; i < n; i++) {
-            appoggio.add(i);
-        }
-        //qui creo le ro come involuzioni. O da 2 o da 1. Per tutti i nodi n del grafo ma non per l'n+1 che aggiungo per sistemare
-        //le rate perché quello deve essere per forza rinominato in se stesso
-        while (!appoggio.isEmpty()) {
-            int temp = appoggio.get(gen.nextInt(appoggio.size()));
-            ret.ro[temp] = appoggio.get(gen.nextInt(appoggio.size()));
-            ret.ro[ret.ro[temp]] = temp;
-            appoggio.remove((Integer) ret.ro[temp]);
-            appoggio.remove((Integer) temp);
-        }
         //rinomino il nodo aggiunto inse stesso
-        ret.ro[n] = n;
+        //ret.ro[n] = n;
         //generazione pi greco per tutti i nodi e li inserisco in u (tranne n+1)
         for (int i = 0; i < n; i++) {
             ret.ro[i] = i;//aggiunta per renderla reversibile
@@ -56,8 +47,8 @@ public class InvoluzioniReversibile {
             sommaPi += ret.pi[i];
         }
         //genero anche la pi del nodo fittizio
-        ret.pi[n] = gen.nextDouble();
-        sommaPi += ret.pi[n];
+        /*ret.pi[n] = gen.nextDouble();
+        sommaPi += ret.pi[n];*/
         /*
          * La somma dei pi deve essere uguale a uno
          */
@@ -85,43 +76,56 @@ public class InvoluzioniReversibile {
             s.add(b);
         }
         //alla fine, dopo aver creato tutti gli archi, sistemo le rate uscenti usando il nodo aggiuntivo
-        sistemaRate(ret);
+        //sistemaRate(ret);
         return ret;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // TODO code application logic here
-        int n = 10;
+        int n = 10;//numero di nodi
+        int l = 1;//numero di catene da generare
         long startTime = System.currentTimeMillis();
         long stopTime;
         long elapsedTime;
         NumberFormat formatter = new DecimalFormat("#0.0000000000000000");
-        Tripla tests[] = new Tripla[1];//serve per generare più catene, non viene utilizzato per adesso
-        for (int k = 0; k < 1; k++) {
-            Tripla chain = getChain(n);
+        BufferedWriter out = new BufferedWriter(new FileWriter("cateneReversibili.txt"));
+        Tripla tests[] = new Tripla[l];//serve per generare più catene, non viene utilizzato per adesso
+        //scrive sul file il numero di catene e il numero di nodi per le catene generate
+        out.write(l+"");
+        out.newLine();
+        out.write(n+"");
+        out.newLine();
+        //per adesso supporta soltanto la generazione di catene con lo stesso numero di nodi
+        for (int k = 0; k < l; k++) {
+            Tripla chain = getChain(n);//tutte le catene hanno lo stesso numero di nodi
             stopTime = System.currentTimeMillis();
             elapsedTime = stopTime - startTime;
             System.out.println("Elapsed time: " + elapsedTime + "ms");
             double archi[][] = chain.chain;
             double nodi[] = chain.pi;
             tests[k] = chain;
-            for (int i = 0; i < n + 1; i++) {
+            for (int i = 0; i < n; i++) {
                 System.out.print(nodi[i] + " ");
             }
             System.out.println("");
-            for (int i = 0; i < n + 1; i++) {
+            for (int i = 0; i < n; i++) {
                 System.out.print(i + "->" + chain.ro[i] + "/");
             }
             System.out.println("");
             System.out.println("");
-            for (int i = 0; i < n + 1; i++) {
-                for (int j = 0; j < n + 1; j++) {
+            for (int i = 0; i < n; i++) {
+                System.out.print(formatter.format(archi[i][0]) + " | ");
+                out.write(archi[i][0] + "");
+                for (int j = 1; j < n; j++) {
                     System.out.print(formatter.format(archi[i][j]) + " | ");
+                    out.write("," + archi[i][j]);
                 }
                 System.out.println("");
+                out.newLine();
             }
             System.out.println("---------------------------------------------");
         }
+        out.close();
         stopTime = System.currentTimeMillis();
         elapsedTime = stopTime - startTime;
         System.out.println("Elapsed time: " + elapsedTime + "ms");
@@ -136,55 +140,6 @@ public class InvoluzioniReversibile {
         //creo arco dalla rinomina di b alla rinomina di a tramite la formula
         chain[aR][bR] = pi[a] * chain[a][b] / pi[b];
         return chain[a][b];
-    }
-
-    //per ogni nodo identifica il suo gruppo, il massimo di quel gruppo, e sistema la rate aggiungendo un arco verso il nodo
-    //aggiuntivo e crendo poi l'arco in ingresso verso la rinomina (che é in ingresso quindi non va a modificare la rate)
-    private static void sistemaRate(Tripla ret) {
-        Random gen = new Random();
-        ArrayList<Integer> nodi = new ArrayList<>();
-        for (int i = 0; i < ret.chain.length; i++) {
-            nodi.add(i);
-        }
-        while (!nodi.isEmpty()) {
-            int nodo = nodi.remove((int) 0);
-            if (ret.ro[nodo] != nodo) {
-                nodi.remove((Integer) ret.ro[nodo]);
-                double somma_1 = trovaSommaUscenti(ret.chain, nodo);
-                double somma_2 = trovaSommaUscenti(ret.chain, ret.ro[nodo]);
-                int x = nodo;
-                int y = ret.ro[nodo];
-                double valArco;
-                double valAggiunto = gen.nextDouble();
-                if (somma_1 > somma_2) {
-                    valArco = somma_1 - somma_2 + valAggiunto;
-                    ret.chain[y][ret.chain.length - 1] = valArco;
-                    ret.chain[ret.chain.length - 1][x] = ret.pi[y] * valArco / ret.pi[ret.chain.length - 1];
-                    ret.chain[x][ret.chain.length - 1] = valAggiunto;
-                    ret.chain[ret.chain.length - 1][y] = ret.pi[x] * valAggiunto / ret.pi[ret.chain.length - 1];
-
-                } else {
-                    valArco = somma_2 - somma_1 + valAggiunto;
-                    ret.chain[x][ret.chain.length - 1] = valArco;
-                    ret.chain[ret.chain.length - 1][y] = ret.pi[x] * valArco / ret.pi[ret.chain.length - 1];
-                    ret.chain[y][ret.chain.length - 1] = valAggiunto;
-                    ret.chain[ret.chain.length - 1][x] = ret.pi[y] * valAggiunto / ret.pi[ret.chain.length - 1];
-                }
-            }
-        }
-        int flag = 0;
-        for (int i = 0; (i < ret.chain.length && flag == 0); i++) {
-            if (ret.chain[ret.chain.length - 1][i] != 0) {
-                flag = 1;
-            }
-        }
-        if (flag == 0) {
-            int x = gen.nextInt(ret.chain.length - 1);
-            double val = rinomine(ret.chain.length - 1, x, ret.pi, ret.chain, ret.ro);
-            ret.chain[ret.chain.length - 1][ret.ro[x]] = val;
-            ret.chain[ret.ro[x]][ret.chain.length - 1] = ret.chain[x][ret.chain.length - 1];
-
-        }
     }
 
     //calcola la somma delle rate uscenti
