@@ -10,6 +10,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  *
@@ -48,15 +49,15 @@ public class InvoluzioniReversibile {
         }
         //genero anche la pi del nodo fittizio
         /*ret.pi[n] = gen.nextDouble();
-        sommaPi += ret.pi[n];*/
+         sommaPi += ret.pi[n];*/
         /*
          * La somma dei pi deve essere uguale a uno
          */
-        for(int i = 0; i < ret.pi.length; i++) {
+        for (int i = 0; i < ret.pi.length; i++) {
             ret.pi[i] /= sommaPi;
         }
         sommaPi = 0;
-        for(int i = 0; i < ret.pi.length; i++) {
+        for (int i = 0; i < ret.pi.length; i++) {
             sommaPi += ret.pi[i];
         }
         //aggiungo un nodo all'insieme iniziale
@@ -82,18 +83,24 @@ public class InvoluzioniReversibile {
 
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
-        int n = 10;//numero di nodi
-        int l = 1;//numero di catene da generare
-        long startTime = System.currentTimeMillis();
+        int n;//numero di nodi
+        int l;//numero di catene da generare
+        long startTime;
         long stopTime;
         long elapsedTime;
+        Scanner tastiera = new Scanner(System.in);
         NumberFormat formatter = new DecimalFormat("#0.0000000000000000");
         BufferedWriter out = new BufferedWriter(new FileWriter("cateneReversibili.txt"));
-        Tripla tests[] = new Tripla[l];//serve per generare più catene, non viene utilizzato per adesso
+        System.out.print("Inserire il numero di nodi: ");
+        n = tastiera.nextInt();
+        System.out.print("Inserire il numero di catene da generare: ");
+        l = tastiera.nextInt();
+        System.out.println("Generazione di " + l + " catena/e ogniuna composta da " + (n + 1) + " nodi.");
+        startTime = System.currentTimeMillis();
         //scrive sul file il numero di catene e il numero di nodi per le catene generate
-        out.write(l+"");
+        out.write(l + "");
         out.newLine();
-        out.write(n+"");
+        out.write(n + "");
         out.newLine();
         //per adesso supporta soltanto la generazione di catene con lo stesso numero di nodi
         for (int k = 0; k < l; k++) {
@@ -103,7 +110,6 @@ public class InvoluzioniReversibile {
             System.out.println("Elapsed time: " + elapsedTime + "ms");
             double archi[][] = chain.chain;
             double nodi[] = chain.pi;
-            tests[k] = chain;
             for (int i = 0; i < n; i++) {
                 System.out.print(nodi[i] + " ");
             }
