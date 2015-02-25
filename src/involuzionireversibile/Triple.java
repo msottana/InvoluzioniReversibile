@@ -8,8 +8,8 @@ package involuzionireversibile;
  *
  * @author Giulia & Matteo
  */
-public class Tripla {
+public class Triple {
     double pi[];
     double chain[][];
-    int ro[];
+    int rho[];
 }
