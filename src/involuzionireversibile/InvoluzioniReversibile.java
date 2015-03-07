@@ -24,17 +24,18 @@ public class InvoluzioniReversibile {
      */
     public static Triple getChain(int n) {
         Triple ret = new Triple();
-        //generation of the data structuresgeneriamo n nodi, e poi 1 in piú per sistemare le rate uscenti
+        //generation of the data structuresgeneriamo n nodi, e poi 1 in piú per
+        //sistemare le rate uscenti
         ret.chain = new double[n][n];
         ret.pi = new double[n];
         ret.rho = new int[n];
-        // s is the set that contains all the vertices of the generated connected component
+        //s is the set that contains all the vertices of the generated connected component
         ArrayList<Integer> s = new ArrayList();
-        // u is the set that contains the remaining nodes of the graph
+        //u is the set that contains the remaining nodes of the graph whic aren't in s
         ArrayList<Integer> u = new ArrayList();
         Random gen = new Random();
         int a, b;
-        double sommaPi = 0.0;
+        double sumPi = 0.0;
         //generation of the pi vector
         for (int i = 0; i < n; i++) {
             ret.rho[i] = i;//each vertex is renamed into himself
@@ -43,25 +44,21 @@ public class InvoluzioniReversibile {
             }
             ret.pi[ret.rho[i]] = ret.pi[i];
             u.add(i);
-            sommaPi += ret.pi[i];
+            sumPi += ret.pi[i];
         }
         // all pi sum to unity
         for (int i = 0; i < ret.pi.length; i++) {
-            ret.pi[i] /= sommaPi;
+            ret.pi[i] /= sumPi;
         }
-        //add the first node to s
+        //Add the first node to s
         s.add(u.remove(gen.nextInt(u.size())));
         //edges generation: while u is not empty we connect the extracted edge to the connected component
         while (!u.isEmpty()) {
             a = s.get(gen.nextInt(s.size()));
             b = u.remove(gen.nextInt(u.size()));
-            //Non devo controllare che non ci sia giá un altro arco da un nodo di s che va verso
-            //u perché nel momento in cui lo metto, per definizione del mio programma, connetto tutto il nodo nella componente connessa
-            //if (ret.chain[a][b] == 0) {
             balanceEquation(a, b, ret.pi, ret.chain/*, ret.ro*/);
             s.add(b);
         }
-        //alla fine, dopo aver creato tutti gli archi, sistemo le rate uscenti usando il nodo aggiuntivo
         return ret;
     }
 
@@ -73,21 +70,21 @@ public class InvoluzioniReversibile {
         long elapsedTime;
         Scanner keyboard = new Scanner(System.in);
         NumberFormat formatter = new DecimalFormat("#0.0000000000000000");
+        //This file will be the imput file for VerifiReversibility
         BufferedWriter out = new BufferedWriter(new FileWriter("inputReversible.txt"));
-        System.out.print("Insert the number of verteces: ");
-        n = keyboard.nextInt();
+        System.out.print("Insert the number of vertices: ");
+        n = keyboard.nextInt(); 
         System.out.print("Insert the number of chains to generate: ");
         l = keyboard.nextInt();
         System.out.println("Generations of " + l + " chains each composed of " + (n + 1) + " vertices.");
         startTime = System.currentTimeMillis();
-        //scrive sul file il numero di catene e il numero di nodi per le catene generate
+        //Write the number of chains and vertices in the output file
         out.write(l + "");
         out.newLine();
         out.write(n + "");
         out.newLine();
-        //per adesso supporta soltanto la generazione di catene con lo stesso numero di nodi
         for (int k = 0; k < l; k++) {
-            Triple chain = getChain(n);//tutte le catene hanno lo stesso numero di nodi
+            Triple chain = getChain(n);//all chains have the same number of vertices
             stopTime = System.currentTimeMillis();
             elapsedTime = stopTime - startTime;
             System.out.println("Elapsed time: " + elapsedTime + "ms");
@@ -131,8 +128,9 @@ public class InvoluzioniReversibile {
         int n = chain.length;
         double max = 0.0;
         double loop;
+        double sum;
         for (int i = 0; i < n; i++) {
-            double sum = 0.0;
+            sum = 0.0;
             for (int j = 0; j < n; j++) {
                 sum += chain[i][j];
             }
@@ -146,8 +144,8 @@ public class InvoluzioniReversibile {
                 chain[i][j] /= max;
                 loop -= chain[i][j];
             }
-            if (loop > 0) {
-                chain[i][i] = loop;//cappio con peso uguale a ciò che manca per avere la somma dei nodi uscenti pari a uno
+            if (loop > 0.0000000001) {
+                chain[i][i] = loop;//loop used to make te outgoing rates of the current vertex sum to 1
             }
         }
         return chain;
