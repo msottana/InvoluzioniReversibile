@@ -30,7 +30,7 @@ public class InvoluzioniReversibile {
         ret.rho = new int[n];
         //s is the set that contains all the vertices of the generated connected component
         ArrayList<Integer> s = new ArrayList();
-        //u is the set that contains the remaining nodes of the graph whic aren't in s
+        //u is the set that contains the remaining nodes of the graph which are not in s
         ArrayList<Integer> u = new ArrayList();
         Random gen = new Random();
         int a, b;
@@ -54,7 +54,7 @@ public class InvoluzioniReversibile {
         while (!u.isEmpty()) {
             a = s.get(gen.nextInt(s.size()));
             b = u.remove(gen.nextInt(u.size()));
-            balanceEquation(a, b, ret.pi, ret.chain/*, ret.ro*/);
+            balanceEquation(a, b, ret.pi, ret.chain);
             s.add(b);
         }
         return ret;
