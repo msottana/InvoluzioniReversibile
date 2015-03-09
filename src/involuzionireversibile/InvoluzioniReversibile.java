@@ -24,8 +24,7 @@ public class InvoluzioniReversibile {
      */
     public static Triple getChain(int n) {
         Triple ret = new Triple();
-        //generation of the data structuresgeneriamo n nodi, e poi 1 in piú per
-        //sistemare le rate uscenti
+        //generation of the data structures
         ret.chain = new double[n][n];
         ret.pi = new double[n];
         ret.rho = new int[n];
@@ -47,12 +46,12 @@ public class InvoluzioniReversibile {
             sumPi += ret.pi[i];
         }
         // all pi sum to unity
-        for (int i = 0; i < ret.pi.length; i++) {
+        for (int i = 0; i < n; i++) {
             ret.pi[i] /= sumPi;
         }
         //Add the first node to s
         s.add(u.remove(gen.nextInt(u.size())));
-        //edges generation: while u is not empty we connect the extracted edge to the connected component
+        //edges generation: while u is not empty we connect the extracted vertex to the connected component
         while (!u.isEmpty()) {
             a = s.get(gen.nextInt(s.size()));
             b = u.remove(gen.nextInt(u.size()));
