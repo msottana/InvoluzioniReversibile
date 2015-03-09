@@ -41,7 +41,6 @@ public class InvoluzioniReversibile {
             if (ret.pi[i] == 0) {
                 ret.pi[i] = gen.nextDouble();
             }
-            ret.pi[ret.rho[i]] = ret.pi[i];
             u.add(i);
             sumPi += ret.pi[i];
         }
