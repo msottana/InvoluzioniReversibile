@@ -66,6 +66,8 @@ public class InvoluzioniReversibile {
         long startTime;
         long stopTime;
         long elapsedTime;
+        String s = "";
+        boolean print;
         Scanner keyboard = new Scanner(System.in);
         NumberFormat formatter = new DecimalFormat("#0.0000000000000000");
         //This file will be the imput file for VerifiReversibility
@@ -74,6 +76,14 @@ public class InvoluzioniReversibile {
         n = keyboard.nextInt(); 
         System.out.print("Insert the number of chains to generate: ");
         l = keyboard.nextInt();
+        System.out.print("Do you want terminal output? y/n");
+        s = keyboard.next();
+        while (!s.equals("y") && !s.equals("n")) {
+            System.out.println("Error, unrecognized command.");
+            System.out.print("Do you want terminal output? y/n ");
+            s = keyboard.next();
+        }
+        print = s.equals("y");
         System.out.println("Generations of " + l + " chains each composed of " + (n + 1) + " vertices.");
         startTime = System.currentTimeMillis();
         //Write the number of chains and vertices in the output file
@@ -88,26 +98,28 @@ public class InvoluzioniReversibile {
             System.out.println("Elapsed time: " + elapsedTime + "ms");
             double[][] edges = converter(chain.chain);
             double[] vertices = chain.pi;
-            for (int i = 0; i < n; i++) {
-                System.out.print(vertices[i] + " ");
-            }
-            System.out.println("");
-            for (int i = 0; i < n; i++) {
-                System.out.print(i + "->" + chain.rho[i] + "/");
-            }
-            System.out.println("");
-            System.out.println("");
-            for (int i = 0; i < n; i++) {
-                System.out.print(formatter.format(edges[i][0]) + " | ");
-                out.write(edges[i][0] + "");
-                for (int j = 1; j < n; j++) {
-                    System.out.print(formatter.format(edges[i][j]) + " | ");
-                    out.write("," + edges[i][j]);
+            if (print) {
+                for (int i = 0; i < n; i++) {
+                    System.out.print(vertices[i] + " ");
                 }
                 System.out.println("");
-                out.newLine();
+                for (int i = 0; i < n; i++) {
+                    System.out.print(i + "->" + chain.rho[i] + "/");
+                }
+                System.out.println("");
+                System.out.println("");
+                for (int i = 0; i < n; i++) {
+                    System.out.print(formatter.format(edges[i][0]) + " | ");
+                    out.write(edges[i][0] + "");
+                    for (int j = 1; j < n; j++) {
+                        System.out.print(formatter.format(edges[i][j]) + " | ");
+                        out.write("," + edges[i][j]);
+                    }
+                    System.out.println("");
+                    out.newLine();
+                }
+                System.out.println("---------------------------------------------");
             }
-            System.out.println("---------------------------------------------");
         }
         out.close();
         stopTime = System.currentTimeMillis();
